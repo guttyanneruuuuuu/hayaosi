@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<title>早押しボタン - hayaosi</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🔴%3C/text%3E%3C/svg%3E" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ========= 入室画面 ========= -->
+<div id="entry-screen" class="screen">
+  <div class="entry-card">
+    <h1 class="title">早押しボタン</h1>
+    <p class="subtitle">スマホで使える早押しクイズ用ボタン<br />（最大15人・低遅延）</p>
+
+    <label class="field">
+      <span>あなたの名前</span>
+      <input id="name-input" type="text" maxlength="12" placeholder="例：たろう" autocomplete="off" />
+    </label>
+
+    <label class="field">
+      <span>合言葉（同じ部屋に入る人で揃える）</span>
+      <input id="room-input" type="text" maxlength="20" placeholder="例：3年A組" autocomplete="off" />
+    </label>
+
+    <div class="role-buttons">
+      <button id="host-btn" class="primary-btn">部屋をつくる<br /><small>（出題者になる）</small></button>
+      <button id="join-btn" class="secondary-btn">部屋に入る<br /><small>（回答者になる）</small></button>
+    </div>
+
+    <p id="entry-status" class="status"></p>
+
+    <details class="help">
+      <summary>使い方</summary>
+      <ol>
+        <li>出題者が「部屋をつくる」を押す</li>
+        <li>回答者全員が同じ合言葉で「部屋に入る」を押す</li>
+        <li>出題者がリセットを押すたびに新しい問題開始</li>
+        <li>一番最初に押した人が画面トップに大きく表示されます</li>
+      </ol>
+      <p class="note">※ 出題者の端末がサーバーになります。出題者は途中でブラウザを閉じないでください。</p>
+    </details>
+  </div>
+</div>
+
+<!-- ========= プレイ画面（回答者用） ========= -->
+<div id="player-screen" class="screen hidden">
+  <header class="topbar">
+    <div class="room-info">
+      <span class="room-label">部屋</span>
+      <span id="player-room-name" class="room-name"></span>
+    </div>
+    <div class="connection">
+      <span id="player-conn-dot" class="dot"></span>
+      <span id="player-conn-text">接続中…</span>
+    </div>
+  </header>
+
+  <div class="result-banner" id="player-result-banner">
+    <div class="result-inner">
+      <div id="player-result-name" class="result-name">―</div>
+      <div id="player-result-sub" class="result-sub">最初に押した人</div>
+    </div>
+  </div>
+
+  <main class="button-stage">
+    <button id="buzz-btn" class="buzz-btn" aria-label="早押しボタン">
+      <span class="buzz-shadow"></span>
+      <span class="buzz-base"></span>
+      <span class="buzz-top">
+        <span class="buzz-glow"></span>
+      </span>
+    </button>
+    <p class="my-name">あなた：<span id="my-name-display"></span></p>
+  </main>
+</div>
+
+<!-- ========= 出題者画面（ホスト用） ========= -->
+<div id="host-screen" class="screen hidden">
+  <header class="topbar">
+    <div class="room-info">
+      <span class="room-label">部屋</span>
+      <span id="host-room-name" class="room-name"></span>
+      <span class="player-count">参加者 <span id="host-player-count">0</span> 人</span>
+    </div>
+    <button id="reset-btn" class="reset-btn">リセット（次の問題へ）</button>
+  </header>
+
+  <section class="ranking">
+    <h2>押した順</h2>
+    <ol id="ranking-list" class="ranking-list">
+      <li class="empty">まだ誰も押していません</li>
+    </ol>
+  </section>
+
+  <section class="players">
+    <h3>参加者一覧</h3>
+    <ul id="players-list" class="players-list"></ul>
+  </section>
+</div>
+
+<!-- 音声プリロード -->
+<audio id="buzzer-audio" src="sounds/buzzer.mp3" preload="auto"></audio>
+
+<!-- PeerJS (WebRTC データチャネル用ライブラリ) -->
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

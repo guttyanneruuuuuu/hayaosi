@@ -1,0 +1,506 @@
+/* ============================================
+   早押しボタン hayaosi - スタイル
+   白背景・定番ボタンデザイン・低遅延優先
+============================================ */
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN",
+               "Hiragino Sans", "Yu Gothic", Meiryo, sans-serif;
+  background: #ffffff;
+  color: #1a1a1a;
+  overscroll-behavior: none;
+  touch-action: manipulation;
+}
+
+input {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+/* ========= スクリーン共通 ========= */
+.screen {
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.hidden { display: none !important; }
+
+/* ========= 入室画面 ========= */
+#entry-screen {
+  justify-content: center;
+  align-items: center;
+  padding: 24px 16px;
+  background: #fafafa;
+}
+
+.entry-card {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 16px;
+  padding: 28px 22px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.06);
+}
+
+.title {
+  margin: 0 0 4px;
+  font-size: 28px;
+  font-weight: 800;
+  text-align: center;
+  color: #d62828;
+  letter-spacing: 0.04em;
+}
+
+.subtitle {
+  margin: 0 0 22px;
+  font-size: 13px;
+  text-align: center;
+  color: #666;
+  line-height: 1.6;
+}
+
+.field {
+  display: block;
+  margin-bottom: 14px;
+}
+.field > span {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+}
+.field input {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 16px;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  background: #fff;
+  outline: none;
+  transition: border-color .15s;
+}
+.field input:focus {
+  border-color: #d62828;
+}
+
+.role-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.primary-btn, .secondary-btn {
+  font-family: inherit;
+  padding: 14px 8px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  line-height: 1.3;
+  transition: transform .08s, box-shadow .12s;
+}
+.primary-btn small, .secondary-btn small {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  margin-top: 4px;
+  opacity: .85;
+}
+
+.primary-btn {
+  background: #d62828;
+  color: #fff;
+  box-shadow: 0 4px 0 #9b1c1c;
+}
+.primary-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #9b1c1c;
+}
+
+.secondary-btn {
+  background: #fff;
+  color: #d62828;
+  border: 2px solid #d62828;
+}
+.secondary-btn:active {
+  transform: translateY(2px);
+}
+
+.status {
+  margin: 14px 0 0;
+  font-size: 13px;
+  text-align: center;
+  color: #d62828;
+  min-height: 18px;
+}
+
+.help {
+  margin-top: 18px;
+  font-size: 13px;
+  color: #555;
+}
+.help summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 6px 0;
+}
+.help ol {
+  padding-left: 20px;
+  line-height: 1.7;
+}
+.help .note {
+  font-size: 12px;
+  color: #888;
+  margin-top: 8px;
+}
+
+/* ========= トップバー ========= */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: #fff;
+  border-bottom: 1px solid #ececec;
+  flex-shrink: 0;
+}
+.room-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.room-label {
+  font-size: 11px;
+  color: #888;
+  background: #f3f3f3;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+.room-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #333;
+}
+.player-count {
+  font-size: 12px;
+  color: #666;
+  margin-left: 4px;
+}
+
+.connection {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #666;
+}
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #ccc;
+  transition: background .2s;
+}
+.dot.connected { background: #2ecc71; }
+.dot.error     { background: #e74c3c; }
+
+/* ========= 結果バナー（プレイヤー画面トップ） ========= */
+.result-banner {
+  background: #fff;
+  border-bottom: 2px solid #ececec;
+  padding: 14px 16px;
+  text-align: center;
+  flex-shrink: 0;
+  transition: background .2s;
+}
+.result-banner.win {
+  background: linear-gradient(180deg, #fff7e6 0%, #ffeac2 100%);
+  border-bottom-color: #f5b942;
+}
+.result-banner.lose {
+  background: #f6f6f6;
+}
+.result-name {
+  font-size: 32px;
+  font-weight: 800;
+  color: #1a1a1a;
+  line-height: 1.1;
+  word-break: break-all;
+}
+.result-banner.win .result-name { color: #d62828; }
+.result-sub {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+}
+
+/* ========= 早押しボタン本体 ========= */
+.button-stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background: #ffffff;
+}
+
+.buzz-btn {
+  position: relative;
+  width: min(80vw, 360px);
+  height: min(80vw, 360px);
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 影 */
+.buzz-shadow {
+  position: absolute;
+  left: 50%;
+  bottom: 4%;
+  width: 80%;
+  height: 14%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at center, rgba(0,0,0,.35) 0%, rgba(0,0,0,0) 70%);
+  filter: blur(2px);
+  z-index: 0;
+}
+
+/* グレーのベース（土台） */
+.buzz-base {
+  position: absolute;
+  left: 50%;
+  bottom: 8%;
+  width: 96%;
+  height: 38%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: linear-gradient(180deg, #8a8a8a 0%, #5a5a5a 55%, #3d3d3d 100%);
+  box-shadow:
+    inset 0 -6px 12px rgba(0,0,0,.4),
+    inset 0 4px 8px rgba(255,255,255,.15);
+  z-index: 1;
+}
+
+/* 赤いボタン部分 */
+.buzz-top {
+  position: absolute;
+  left: 50%;
+  top: 4%;
+  width: 88%;
+  height: 70%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 28%, #ff8a7a 0%, #ff3a2a 28%, #d6190b 60%, #9a0d05 100%);
+  box-shadow:
+    inset 0 -18px 30px rgba(0,0,0,.45),
+    inset 0 12px 24px rgba(255,255,255,.35),
+    0 10px 18px rgba(0,0,0,.25);
+  z-index: 2;
+  transition:
+    transform .07s ease-out,
+    box-shadow .07s ease-out,
+    filter .15s ease-out;
+}
+
+/* ハイライト光彩（押された時に光るレイヤー） */
+.buzz-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, rgba(255,255,200,.85) 0%, rgba(255,180,80,.5) 30%, rgba(255,80,40,0) 70%);
+  opacity: 0;
+  transition: opacity .15s ease-out;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* 押された状態 */
+.buzz-btn.pressed .buzz-top {
+  transform: translateX(-50%) translateY(10px) scale(0.96);
+  box-shadow:
+    inset 0 -8px 16px rgba(0,0,0,.55),
+    inset 0 6px 14px rgba(255,255,255,.25),
+    0 4px 8px rgba(0,0,0,.25),
+    0 0 40px 8px rgba(255, 80, 40, .65);
+  filter: brightness(1.15) saturate(1.2);
+}
+.buzz-btn.pressed .buzz-glow {
+  opacity: 1;
+  animation: glowPulse .6s ease-out;
+}
+
+@keyframes glowPulse {
+  0%   { opacity: 0; transform: scale(.7); }
+  30%  { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.25); }
+}
+
+/* ロック中（既に誰かが押した後）の見た目 */
+.buzz-btn.locked {
+  opacity: 0.55;
+  filter: grayscale(0.3);
+  pointer-events: none;
+}
+
+.my-name {
+  margin-top: 18px;
+  font-size: 13px;
+  color: #777;
+}
+.my-name span {
+  font-weight: 700;
+  color: #333;
+}
+
+/* ========= ホスト画面 ========= */
+#host-screen {
+  background: #f7f7f7;
+}
+
+.reset-btn {
+  font-family: inherit;
+  background: #d62828;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #9b1c1c;
+  transition: transform .08s;
+}
+.reset-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #9b1c1c;
+}
+
+.ranking {
+  padding: 16px;
+  background: #fff;
+  margin: 12px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.04);
+}
+.ranking h2 {
+  margin: 0 0 12px;
+  font-size: 16px;
+  color: #d62828;
+}
+.ranking-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  counter-reset: rank;
+}
+.ranking-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 16px;
+  animation: slideIn .25s ease-out;
+}
+.ranking-list li:last-child { border-bottom: none; }
+.ranking-list li.empty {
+  color: #aaa;
+  font-size: 13px;
+  text-align: center;
+  justify-content: center;
+  padding: 18px 0;
+}
+.ranking-list li.first {
+  background: linear-gradient(90deg, #fff5dc 0%, #fff 100%);
+  font-weight: 700;
+}
+.rank-num {
+  font-size: 22px;
+  font-weight: 800;
+  color: #888;
+  min-width: 34px;
+  text-align: center;
+}
+.ranking-list li.first .rank-num {
+  color: #d62828;
+}
+.rank-name {
+  flex: 1;
+  font-size: 18px;
+  color: #222;
+  word-break: break-all;
+}
+.rank-time {
+  font-size: 13px;
+  color: #888;
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.players {
+  padding: 0 16px 24px;
+  margin: 0 12px;
+}
+.players h3 {
+  font-size: 13px;
+  color: #888;
+  margin: 8px 0;
+  font-weight: 600;
+}
+.players-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.players-list li {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  padding: 5px 10px;
+  border-radius: 14px;
+  font-size: 12px;
+  color: #444;
+}
+.players-list li.disconnected {
+  opacity: .4;
+  text-decoration: line-through;
+}
+
+/* ========= スマホ細部調整 ========= */
+@media (max-height: 600px) {
+  .buzz-btn {
+    width: min(60vw, 280px);
+    height: min(60vw, 280px);
+  }
+  .result-name { font-size: 26px; }
+}
