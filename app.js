@@ -434,7 +434,7 @@
     if (!data || typeof data !== 'object') return;
 
     if (data.type === 'state') {
-      // ランキング更新 & ロック状態同期
+      // ランキング更新
       const r = data.ranking || [];
 
       if (r.length === 0) {
@@ -464,10 +464,6 @@
               : '0.000';
             resultSub.textContent = `あなたは${rank}位（1位と+${diffSec}秒）`;
           }
-        } else if (data.you && data.you.isFirst) {
-          resultBanner.classList.remove('lose');
-          resultBanner.classList.add('win');
-          resultSub.textContent = 'あなたが一番でした！';
         } else {
           resultBanner.classList.remove('win');
           resultBanner.classList.add('lose');
