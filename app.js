@@ -55,7 +55,6 @@
   // プレイヤー側
   let hostConn = null;
   let hasBuzzed = false;
-  let locked = false;
 
   // ---- ユーティリティ ----
 
@@ -215,7 +214,7 @@
         const entry = { conn, name: '(接続中)', connected: true };
         connections.set(conn.peer, entry);
         // 現在の状態を新規参加者に送る
-        sendTo(conn, { type: 'state', ranking, locked: false });
+        sendTo(conn, { type: 'state', ranking });
         updateHostUI();
       });
 
@@ -259,7 +258,7 @@
       entry.name = String(data.name || '名無し').slice(0, 12);
       updateHostUI();
       // 改めて最新状態を送る
-      sendTo(conn, { type: 'state', ranking, locked: false });
+      sendTo(conn, { type: 'state', ranking });
       return;
     }
 
@@ -291,7 +290,6 @@
     const payload = {
       type: 'state',
       ranking: ranking.map(r => ({ name: r.name, time: r.time })),
-      locked: false,
       firstId: ranking[0] ? ranking[0].id : null
     };
     connections.forEach((e) => {
@@ -405,7 +403,6 @@
       hostConn.on('close', () => {
         console.warn('[Player] disconnected from host');
         setPlayerConn('error', 'ホストとの接続が切れました');
-        locked = true;
         buzzBtn.classList.add('locked');
       });
 
@@ -440,7 +437,6 @@
       if (r.length === 0) {
         // リセット
         hasBuzzed = false;
-        locked = false;
         buzzBtn.classList.remove('locked');
         buzzBtn.classList.remove('pressed');
         resultBanner.classList.remove('win', 'lose');
@@ -461,8 +457,9 @@
             const rank = data.you.rank ?? '―';
             const diffSec = typeof data.you.diffMs === 'number'
               ? (data.you.diffMs / 1000).toFixed(3)
-              : '0.000';
-            resultSub.textContent = `あなたは${rank}位（1位と+${diffSec}秒）`;
+              : '―';
+            const diffLabel = diffSec === '―' ? '1位との差 不明' : `1位と+${diffSec}秒`;
+            resultSub.textContent = `あなたは${rank}位（${diffLabel}）`;
           }
         } else {
           resultBanner.classList.remove('win');
@@ -483,7 +480,7 @@
       ev.stopPropagation();
     }
     if (role !== 'player') return;
-    if (hasBuzzed || locked) return;
+    if (hasBuzzed) return;
     if (!hostConn || !hostConn.open) return;
 
     hasBuzzed = true;
