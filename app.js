@@ -215,7 +215,7 @@
         const entry = { conn, name: '(接続中)', connected: true };
         connections.set(conn.peer, entry);
         // 現在の状態を新規参加者に送る
-        sendTo(conn, { type: 'state', ranking, locked: ranking.length > 0 });
+        sendTo(conn, { type: 'state', ranking, locked: false });
         updateHostUI();
       });
 
@@ -259,7 +259,7 @@
       entry.name = String(data.name || '名無し').slice(0, 12);
       updateHostUI();
       // 改めて最新状態を送る
-      sendTo(conn, { type: 'state', ranking, locked: ranking.length > 0 });
+      sendTo(conn, { type: 'state', ranking, locked: false });
       return;
     }
 
@@ -291,15 +291,23 @@
     const payload = {
       type: 'state',
       ranking: ranking.map(r => ({ name: r.name, time: r.time })),
-      locked: ranking.length > 0,
+      locked: false,
       firstId: ranking[0] ? ranking[0].id : null
     };
     connections.forEach((e) => {
       if (!e.connected) return;
+      const myIndex = ranking.findIndex((r) => r.id === e.conn.peer);
+      const firstTime = ranking[0] ? ranking[0].time : 0;
+      const myTime = myIndex >= 0 ? ranking[myIndex].time : null;
       // 各接続には自分が1位か判別できるよう、自分のIDも含める
       sendTo(e.conn, {
         ...payload,
-        you: { isFirst: ranking[0] && ranking[0].id === e.conn.peer }
+        you: {
+          hasBuzzed: myIndex >= 0,
+          isFirst: !!(ranking[0] && ranking[0].id === e.conn.peer),
+          rank: myIndex >= 0 ? myIndex + 1 : null,
+          diffMs: myTime === null ? null : Math.max(0, myTime - firstTime)
+        }
       });
     });
   }
@@ -428,7 +436,6 @@
     if (data.type === 'state') {
       // ランキング更新 & ロック状態同期
       const r = data.ranking || [];
-      locked = !!data.locked;
 
       if (r.length === 0) {
         // リセット
@@ -442,7 +449,22 @@
       } else {
         const first = r[0];
         resultName.textContent = first.name;
-        if (data.you && data.you.isFirst) {
+        if (data.you && data.you.hasBuzzed) {
+          buzzBtn.classList.add('locked');
+          if (data.you.isFirst) {
+            resultBanner.classList.remove('lose');
+            resultBanner.classList.add('win');
+            resultSub.textContent = 'あなたが1位でした！';
+          } else {
+            resultBanner.classList.remove('win');
+            resultBanner.classList.add('lose');
+            const rank = data.you.rank ?? '―';
+            const diffSec = typeof data.you.diffMs === 'number'
+              ? (data.you.diffMs / 1000).toFixed(3)
+              : '0.000';
+            resultSub.textContent = `あなたは${rank}位（1位と+${diffSec}秒）`;
+          }
+        } else if (data.you && data.you.isFirst) {
           resultBanner.classList.remove('lose');
           resultBanner.classList.add('win');
           resultSub.textContent = 'あなたが一番でした！';
@@ -450,10 +472,6 @@
           resultBanner.classList.remove('win');
           resultBanner.classList.add('lose');
           resultSub.textContent = '最初に押した人';
-        }
-        // 自分以外が押した場合はボタンをロック
-        if (locked) {
-          buzzBtn.classList.add('locked');
         }
       }
     }
