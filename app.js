@@ -337,7 +337,7 @@
       ranking.forEach((r, i) => {
         const li = document.createElement('li');
         if (i === 0) li.classList.add('first');
-        const timeStr = i === 0 ? '基準' : '+' + r.time + 'ms';
+        const timeStr = i === 0 ? '基準' : `+${(r.time / 1000).toFixed(3)}秒`;
         li.innerHTML = `
           <span class="rank-num">${i+1}</span>
           <span class="rank-name">${escapeHtml(r.name)}</span>
