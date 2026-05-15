@@ -259,14 +259,14 @@ input {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  padding: 18px 20px max(18px, env(safe-area-inset-bottom));
   background: #ffffff;
 }
 
 .buzz-btn {
   position: relative;
-  width: min(80vw, 360px);
-  height: min(80vw, 360px);
+  width: min(78vw, 56vh, 360px);
+  height: min(78vw, 56vh, 360px);
   border: none;
   background: transparent;
   padding: 0;
@@ -304,22 +304,38 @@ input {
   z-index: 1;
 }
 
+.buzz-ring {
+  position: absolute;
+  left: 50%;
+  top: 10%;
+  width: 94%;
+  height: 66%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: linear-gradient(180deg, #f1f1f1 0%, #cbcbcb 38%, #9f9f9f 100%);
+  box-shadow:
+    inset 0 2px 2px rgba(255,255,255,.75),
+    inset 0 -6px 12px rgba(0,0,0,.28),
+    0 10px 16px rgba(0,0,0,.18);
+  z-index: 2;
+}
+
 /* 赤いボタン部分 */
 .buzz-top {
   position: absolute;
   left: 50%;
-  top: 4%;
-  width: 88%;
-  height: 70%;
+  top: 6%;
+  width: 82%;
+  height: 62%;
   transform: translateX(-50%);
   border-radius: 50%;
   background:
-    radial-gradient(circle at 35% 28%, #ff8a7a 0%, #ff3a2a 28%, #d6190b 60%, #9a0d05 100%);
+    radial-gradient(circle at 38% 25%, #ffd8cf 0%, #ff8a7a 16%, #ff3a2a 38%, #d6190b 68%, #8b0c05 100%);
   box-shadow:
     inset 0 -18px 30px rgba(0,0,0,.45),
     inset 0 12px 24px rgba(255,255,255,.35),
     0 10px 18px rgba(0,0,0,.25);
-  z-index: 2;
+  z-index: 3;
   transition:
     transform .07s ease-out,
     box-shadow .07s ease-out,
@@ -335,12 +351,28 @@ input {
   opacity: 0;
   transition: opacity .15s ease-out;
   pointer-events: none;
-  z-index: 3;
+  z-index: 4;
+}
+
+.buzz-label {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(12px, 4.2vw, 20px);
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: rgba(255,255,255,.92);
+  text-shadow:
+    0 1px 1px rgba(0,0,0,.28),
+    0 0 6px rgba(255,255,255,.28);
+  pointer-events: none;
+  z-index: 5;
 }
 
 /* 押された状態 */
 .buzz-btn.pressed .buzz-top {
-  transform: translateX(-50%) translateY(10px) scale(0.96);
+  transform: translateX(-50%) translateY(11px) scale(0.955);
   box-shadow:
     inset 0 -8px 16px rgba(0,0,0,.55),
     inset 0 6px 14px rgba(255,255,255,.25),
@@ -499,8 +531,89 @@ input {
 /* ========= スマホ細部調整 ========= */
 @media (max-height: 600px) {
   .buzz-btn {
-    width: min(60vw, 280px);
-    height: min(60vw, 280px);
+    width: min(58vw, 42vh, 280px);
+    height: min(58vw, 42vh, 280px);
   }
   .result-name { font-size: 26px; }
+}
+
+@media (max-width: 480px) and (orientation: portrait) {
+  #entry-screen {
+    justify-content: flex-start;
+    padding: max(14px, env(safe-area-inset-top)) 12px 16px;
+  }
+
+  .entry-card {
+    max-width: 100%;
+    border-radius: 14px;
+    padding: 18px 14px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .subtitle {
+    margin-bottom: 16px;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .role-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .topbar {
+    align-items: flex-start;
+    gap: 8px;
+    padding: max(10px, env(safe-area-inset-top)) 12px 10px;
+  }
+
+  #host-screen .topbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #host-screen .room-info {
+    justify-content: space-between;
+  }
+
+  .result-banner {
+    padding: 10px 12px;
+  }
+
+  .result-name {
+    font-size: clamp(24px, 9vw, 34px);
+  }
+
+  .button-stage {
+    justify-content: flex-start;
+    padding-top: 12px;
+    gap: 10px;
+  }
+
+  .buzz-btn {
+    width: min(92vw, 52vh, 360px);
+    height: min(92vw, 52vh, 360px);
+  }
+
+  .my-name {
+    margin-top: 6px;
+    font-size: 12px;
+  }
+
+  .reset-btn {
+    width: 100%;
+    box-shadow: 0 2px 0 #9b1c1c;
+  }
+
+  .ranking {
+    margin: 8px;
+    padding: 12px;
+  }
+
+  .players {
+    margin: 0 8px;
+    padding: 0 12px 18px;
+  }
 }
