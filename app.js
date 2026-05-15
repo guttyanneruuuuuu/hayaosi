@@ -287,25 +287,30 @@
   }
 
   function broadcastState() {
+    const first = ranking[0] || null;
+    const firstTime = first ? first.time : 0;
+    const myResultById = new Map();
+    ranking.forEach((r, i) => {
+      myResultById.set(r.id, {
+        hasBuzzed: true,
+        isFirst: i === 0,
+        rank: i + 1,
+        diffMs: Math.max(0, r.time - firstTime)
+      });
+    });
+
     const payload = {
       type: 'state',
       ranking: ranking.map(r => ({ name: r.name, time: r.time })),
-      firstId: ranking[0] ? ranking[0].id : null
+      firstId: first ? first.id : null
     };
     connections.forEach((e) => {
       if (!e.connected) return;
-      const myIndex = ranking.findIndex((r) => r.id === e.conn.peer);
-      const firstTime = ranking[0] ? ranking[0].time : 0;
-      const myTime = myIndex >= 0 ? ranking[myIndex].time : null;
+      const myResult = myResultById.get(e.conn.peer);
       // 各接続には自分が1位か判別できるよう、自分のIDも含める
       sendTo(e.conn, {
         ...payload,
-        you: {
-          hasBuzzed: myIndex >= 0,
-          isFirst: !!(ranking[0] && ranking[0].id === e.conn.peer),
-          rank: myIndex >= 0 ? myIndex + 1 : null,
-          diffMs: myTime === null ? null : Math.max(0, myTime - firstTime)
-        }
+        you: myResult || { hasBuzzed: false, isFirst: false, rank: null, diffMs: null }
       });
     });
   }
@@ -458,7 +463,7 @@
             const diffSec = typeof data.you.diffMs === 'number'
               ? (data.you.diffMs / 1000).toFixed(3)
               : '―';
-            const diffLabel = diffSec === '―' ? '1位との差 不明' : `1位と+${diffSec}秒`;
+            const diffLabel = diffSec === '―' ? '1位との差 不明' : `1位との差 +${diffSec}秒`;
             resultSub.textContent = `あなたは${rank}位（${diffLabel}）`;
           }
         } else {
