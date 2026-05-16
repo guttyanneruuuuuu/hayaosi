@@ -14,7 +14,7 @@
 <div id="entry-screen" class="screen">
   <div class="entry-card">
     <h1 class="title">早押しボタン</h1>
-    <p class="subtitle">スマホで使える早押しクイズ用ボタン<br />（最大15人・低遅延）</p>
+    <p class="subtitle">対面クイズ大会のための<br />スマホ早押し&amp;選択回答システム（最大15人）</p>
 
     <label class="field">
       <span>あなたの名前</span>
@@ -38,8 +38,10 @@
       <ol>
         <li>出題者が「部屋をつくる」を押す</li>
         <li>回答者全員が同じ合言葉で「部屋に入る」を押す</li>
-        <li>出題者がリセットを押すたびに新しい問題開始</li>
-        <li>一番最初に押した人が画面トップに大きく表示されます</li>
+        <li>出題者がモード（早押し / 選択問題）を切り替え</li>
+        <li>問題を出して、回答者は早押しボタンか1〜4ボタンで回答</li>
+        <li>出題者が〇×、または正解番号を発表すると全員に音と結果が表示</li>
+        <li>「次の問題へ」で次の出題に進む</li>
       </ol>
       <p class="note">※ 出題者の端末がサーバーになります。出題者は途中でブラウザを閉じないでください。</p>
     </details>
@@ -52,6 +54,8 @@
     <div class="room-info">
       <span class="room-label">部屋</span>
       <span id="player-room-name" class="room-name"></span>
+      <span class="player-mybadge">あなた：<span id="my-name-display"></span></span>
+      <span class="score-badge">★ <span id="player-score">0</span></span>
     </div>
     <div class="connection">
       <span id="player-conn-dot" class="dot"></span>
@@ -59,14 +63,16 @@
     </div>
   </header>
 
+  <!-- 結果バナー -->
   <div class="result-banner" id="player-result-banner">
     <div class="result-inner">
       <div id="player-result-name" class="result-name">―</div>
-      <div id="player-result-sub" class="result-sub">最初に押した人</div>
+      <div id="player-result-sub" class="result-sub">準備中</div>
     </div>
   </div>
 
-  <main class="button-stage">
+  <!-- 早押しモード時のメイン -->
+  <main id="player-buzz-stage" class="button-stage">
     <button id="buzz-btn" class="buzz-btn" aria-label="早押しボタン">
       <span class="buzz-shadow"></span>
       <span class="buzz-base"></span>
@@ -74,7 +80,19 @@
         <span class="buzz-glow"></span>
       </span>
     </button>
-    <p class="my-name">あなた：<span id="my-name-display"></span></p>
+    <p class="stage-hint" id="buzz-hint">問題が出されたらタップ！</p>
+  </main>
+
+  <!-- 選択問題モード時のメイン -->
+  <main id="player-choice-stage" class="choice-stage hidden">
+    <p class="stage-hint">あなたの答えを選んでください</p>
+    <div class="choice-grid">
+      <button class="choice-btn" data-choice="1"><span class="choice-num">1</span></button>
+      <button class="choice-btn" data-choice="2"><span class="choice-num">2</span></button>
+      <button class="choice-btn" data-choice="3"><span class="choice-num">3</span></button>
+      <button class="choice-btn" data-choice="4"><span class="choice-num">4</span></button>
+    </div>
+    <p class="choice-status" id="choice-status">回答前</p>
   </main>
 </div>
 
@@ -86,26 +104,84 @@
       <span id="host-room-name" class="room-name"></span>
       <span class="player-count">参加者 <span id="host-player-count">0</span> 人</span>
     </div>
-    <button id="reset-btn" class="reset-btn">リセット（次の問題へ）</button>
+    <div class="mode-switch">
+      <button class="mode-btn active" data-mode="buzz">早押し</button>
+      <button class="mode-btn" data-mode="choice">4択</button>
+    </div>
   </header>
 
-  <section class="ranking">
-    <h2>押した順</h2>
-    <ol id="ranking-list" class="ranking-list">
-      <li class="empty">まだ誰も押していません</li>
-    </ol>
+  <!-- 早押しモード -->
+  <section id="host-buzz-section" class="host-section">
+    <div class="ranking-block">
+      <div class="section-head">
+        <h2>押した順</h2>
+        <button id="next-btn" class="next-btn">次の問題へ ▶</button>
+      </div>
+      <ol id="ranking-list" class="ranking-list">
+        <li class="empty">まだ誰も押していません</li>
+      </ol>
+    </div>
+
+    <!-- 判定ボタン（1位が確定したら表示） -->
+    <div id="judge-block" class="judge-block hidden">
+      <p class="judge-prompt">
+        <span id="judge-target-name">―</span> の解答は？
+      </p>
+      <div class="judge-buttons">
+        <button id="judge-correct" class="judge-btn judge-correct">◯ 正解</button>
+        <button id="judge-wrong" class="judge-btn judge-wrong">✕ 不正解</button>
+      </div>
+      <p class="judge-hint">不正解の場合、その人は今の問題で押せなくなり、次の人が押せます</p>
+    </div>
   </section>
 
+  <!-- 4択モード -->
+  <section id="host-choice-section" class="host-section hidden">
+    <div class="section-head">
+      <h2>みんなの回答</h2>
+      <button id="next-btn-choice" class="next-btn">次の問題へ ▶</button>
+    </div>
+
+    <!-- 集計 -->
+    <div class="tally">
+      <div class="tally-item" data-n="1"><div class="tally-num">1</div><div class="tally-bar"><div class="tally-fill" id="tally-fill-1"></div></div><div class="tally-count" id="tally-count-1">0</div></div>
+      <div class="tally-item" data-n="2"><div class="tally-num">2</div><div class="tally-bar"><div class="tally-fill" id="tally-fill-2"></div></div><div class="tally-count" id="tally-count-2">0</div></div>
+      <div class="tally-item" data-n="3"><div class="tally-num">3</div><div class="tally-bar"><div class="tally-fill" id="tally-fill-3"></div></div><div class="tally-count" id="tally-count-3">0</div></div>
+      <div class="tally-item" data-n="4"><div class="tally-num">4</div><div class="tally-bar"><div class="tally-fill" id="tally-fill-4"></div></div><div class="tally-count" id="tally-count-4">0</div></div>
+    </div>
+
+    <!-- 個別回答 -->
+    <ul id="answers-list" class="answers-list">
+      <li class="empty">回答待ち…</li>
+    </ul>
+
+    <!-- 正解発表 -->
+    <div class="reveal-block">
+      <p class="reveal-prompt">正解を発表</p>
+      <div class="reveal-buttons">
+        <button class="reveal-btn" data-answer="1">1</button>
+        <button class="reveal-btn" data-answer="2">2</button>
+        <button class="reveal-btn" data-answer="3">3</button>
+        <button class="reveal-btn" data-answer="4">4</button>
+      </div>
+      <p class="reveal-status" id="reveal-status"></p>
+    </div>
+  </section>
+
+  <!-- 参加者&スコア（共通） -->
   <section class="players">
-    <h3>参加者一覧</h3>
+    <h3>参加者&スコア</h3>
     <ul id="players-list" class="players-list"></ul>
+    <button id="reset-scores-btn" class="reset-scores-btn">スコアをリセット</button>
   </section>
 </div>
 
 <!-- 音声プリロード -->
 <audio id="buzzer-audio" src="sounds/buzzer.mp3" preload="auto"></audio>
+<audio id="correct-audio" src="sounds/correct.mp3" preload="auto"></audio>
+<audio id="wrong-audio" src="sounds/wrong.mp3" preload="auto"></audio>
 
-<!-- PeerJS (WebRTC データチャネル用ライブラリ) -->
+<!-- PeerJS -->
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <script src="app.js"></script>
 </body>
